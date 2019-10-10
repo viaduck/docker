@@ -1,0 +1,56 @@
+# Dockerfile for building a CI container that is used for cross-compiling
+FROM viaduck/ci
+ARG ANDROID_SDK_TOOLS=4333796
+ARG ANDROID_STUDIO_VERSION_EXTERNAL=3.5.0.21
+ARG ANDROID_STUDIO_VERSION_INTERNAL=191.5791312
+ARG NDK_VERSION=r20
+
+SHELL ["/bin/bash", "-c"]
+RUN apt-get update && apt-get upgrade -y && apt-get install -y wget tar unzip lib32stdc++6 lib32z1
+RUN rm -rf /var/lib/apt/lists/*
+
+# download sdk
+RUN mkdir -p /android/
+WORKDIR /android/
+RUN wget -O sdk.zip https://dl.google.com/android/repository/sdk-tools-linux-${ANDROID_SDK_TOOLS}.zip
+RUN unzip -d sdk sdk.zip
+RUN echo $ANDROID_SDK_TOOLS > sdk/version.txt
+
+# download Android Studio with bundled jre
+RUN wget -O studio.tar.gz https://dl.google.com/dl/android/studio/ide-zips/${ANDROID_STUDIO_VERSION_EXTERNAL}/android-studio-ide-${ANDROID_STUDIO_VERSION_INTERNAL}-linux.tar.gz
+RUN tar -xvf studio.tar.gz
+RUN mv android-studio/jre/ jre/
+RUN echo $ANDROID_STUDIO_VERSION_EXTERNAL:$ANDROID_STUDIO_VERSION_INTERNAL > jre/version.txt
+ENV JAVA_HOME /android/jre/
+ENV PATH "${PATH}:${JAVA_HOME}/bin/"
+
+# install stuff
+WORKDIR /android/
+RUN echo y | sdk/tools/bin/sdkmanager "platform-tools"
+RUN echo y | sdk/tools/bin/sdkmanager "platforms;android-29"
+RUN echo y | sdk/tools/bin/sdkmanager "platforms;android-28"
+RUN echo y | sdk/tools/bin/sdkmanager "platforms;android-27"
+RUN echo y | sdk/tools/bin/sdkmanager "build-tools;28.0.3"
+
+# symlinks
+RUN ln -s 28.0.3/ /android/sdk/build-tools/latest
+
+# accept licenses
+RUN set +o pipefail
+RUN yes | sdk/tools/bin/sdkmanager --licenses
+RUN set -o pipefail
+
+# download ndk
+RUN wget -O ndk.zip https://dl.google.com/android/repository/android-ndk-${NDK_VERSION}-linux-x86_64.zip
+RUN unzip ndk.zip
+
+# install ndk
+RUN ln -s android-ndk-${NDK_VERSION} ndk
+RUN ln -s android-ndk-${NDK_VERSION} sdk/ndk-bundle
+ENV ANDROID_NDK_HOME /android/ndk/
+RUN echo $NDK_VERSION > ndk/version.txt
+
+# cleanup
+RUN rm -f sdk.zip ndk.zip studio.tar.gz
+RUN rm -rf android-studio/
+WORKDIR /

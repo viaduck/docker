@@ -1,0 +1,26 @@
+# Dockerfile for building a CI container used to build Chromium Embedded Framework (CEF)
+#
+# https://bitbucket.org/chromiumembedded/cef/wiki/MasterBuildQuickStart.md
+# https://bitbucket.org/chromiumembedded/cef/wiki/AutomatedBuildSetup.md
+FROM ubuntu:16.04
+SHELL ["/bin/bash", "-c"]
+
+# add local hetzner mirror
+RUN echo -e "deb http://mirror.hetzner.de/ubuntu/packages xenial main restricted universe multiverse\ndeb http://mirror.hetzner.de/ubuntu/packages xenial-updates main restricted universe multiverse\ndeb http://mirror.hetzner.de/ubuntu/packages xenial-backports main restricted universe multiverse\ndeb http://mirror.hetzner.de/ubuntu/packages xenial-security main restricted universe multiverse\n\n$(cat /etc/apt/sources.list)" > /etc/apt/sources.list
+
+# prepare
+RUN apt-get update && apt-get upgrade -y
+RUN apt-get install -y curl sudo lsb-release python
+
+# install CEF deps
+RUN curl 'https://chromium.googlesource.com/chromium/src/+/master/build/install-build-deps.sh?format=TEXT' | base64 -d > install-build-deps.sh
+RUN chmod 755 install-build-deps.sh
+RUN ./install-build-deps.sh --no-arm --no-chromeos-fonts --no-nacl
+RUN apt-get install -y openjdk-8-jdk
+
+# install additional cefsimple deps
+RUN apt-get install -y libgtkglext1-dev
+
+# setup build environment
+WORKDIR /cef/
+RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
