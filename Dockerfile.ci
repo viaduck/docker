@@ -42,7 +42,7 @@ RUN apt-get update && apt-get install -y yarn nodejs
 RUN curl -sS https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
 RUN echo "deb http://apt.llvm.org/buster/ llvm-toolchain-buster-10 main" | tee /etc/apt/sources.list.d/llvm.list
 # install clang and libFuzzer
-apt install clang-10 libfuzzer-10-dev
+RUN apt-get update && apt-get install -y clang-10 libfuzzer-10-dev
 
 # add flathub
 RUN flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
