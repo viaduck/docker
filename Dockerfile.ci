@@ -13,6 +13,7 @@
 # - extra-cmake-modules: libsnore dependency
 # - yarn, nodejs: gui-common dependency
 # - flatpak-builder: [optional] Required for building flatpaks
+# - clang-10, libfuzzer-10-dev: [optional] Required for fuzzing
 FROM debian:buster
 SHELL ["/bin/bash", "-c"]
 
@@ -36,6 +37,12 @@ RUN curl -sSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add
 RUN echo "deb https://deb.nodesource.com/node_11.x buster main" | tee /etc/apt/sources.list.d/nodesource.list
 # install yarn and node
 RUN apt-get update && apt-get install -y yarn nodejs
+
+# add LLVM repo
+RUN curl -sS https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
+RUN echo "deb http://apt.llvm.org/buster/ llvm-toolchain-buster-10 main" | tee /etc/apt/sources.list.d/llvm.list
+# install clang and libFuzzer
+apt install clang-10 libfuzzer-10-dev
 
 # add flathub
 RUN flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
