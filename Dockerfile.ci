@@ -48,9 +48,9 @@ apt install clang-10 libfuzzer-10-dev
 RUN flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
 # install flatpak SDKs
-RUN flatpak install -y --noninteractive org.kde.Sdk/x86_64/5.13
-RUN flatpak install -y --noninteractive org.kde.Platform/x86_64/5.13
-RUN flatpak install -y --noninteractive io.atom.electron.BaseApp/x86_64/stable
+RUN flatpak install -y --noninteractive org.kde.Sdk/x86_64/5.14
+RUN flatpak install -y --noninteractive org.kde.Platform/x86_64/5.14
+RUN flatpak install -y --noninteractive io.atom.electron.BaseApp/x86_64/19.08
 
 RUN rm -rf /var/lib/apt/lists/*
 RUN pip3 install cogapp
