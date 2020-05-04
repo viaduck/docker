@@ -53,5 +53,9 @@ RUN flatpak install -y --noninteractive org.kde.Sdk/x86_64/5.14
 RUN flatpak install -y --noninteractive org.kde.Platform/x86_64/5.14
 RUN flatpak install -y --noninteractive io.atom.electron.BaseApp/x86_64/19.08
 
+# get linter
+RUN git clone https://gl.viaduck.org/viaduck/lint.git
+RUN ln -s /lint/vd-lint /bin/vd-lint
+
 RUN rm -rf /var/lib/apt/lists/*
 RUN pip3 install cogapp
