@@ -15,10 +15,11 @@
 # - flatpak-builder: [optional] Required for building flatpaks
 # - clang-10, libfuzzer-10-dev: [optional] Required for fuzzing
 FROM debian:buster
+ARG MIRROR=
 SHELL ["/bin/bash", "-c"]
 
-# add local hetzner mirror
-RUN echo -e "deb http://mirror.hetzner.de/debian/packages buster main contrib non-free\ndeb http://mirror.hetzner.de/debian/packages buster-updates main contrib non-free\ndeb http://mirror.hetzner.de/debian/security buster/updates main contrib non-free\n\n$(cat /etc/apt/sources.list)" > /etc/apt/sources.list
+# add local mirror if specified
+RUN [ -z "$MIRROR" ] || echo -e "deb $MIRROR/packages buster main contrib non-free\ndeb $MIRROR/packages buster-updates main contrib non-free\ndeb $MIRROR/security buster/updates main contrib non-free\n\n$(cat /etc/apt/sources.list)" > /etc/apt/sources.list
 
 # update, upgrade and install
 RUN apt-get update && apt-get upgrade -y

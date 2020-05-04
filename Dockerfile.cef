@@ -3,10 +3,11 @@
 # https://bitbucket.org/chromiumembedded/cef/wiki/MasterBuildQuickStart.md
 # https://bitbucket.org/chromiumembedded/cef/wiki/AutomatedBuildSetup.md
 FROM ubuntu:16.04
+ARG MIRROR=
 SHELL ["/bin/bash", "-c"]
 
-# add local hetzner mirror
-RUN echo -e "deb http://mirror.hetzner.de/ubuntu/packages xenial main restricted universe multiverse\ndeb http://mirror.hetzner.de/ubuntu/packages xenial-updates main restricted universe multiverse\ndeb http://mirror.hetzner.de/ubuntu/packages xenial-backports main restricted universe multiverse\ndeb http://mirror.hetzner.de/ubuntu/packages xenial-security main restricted universe multiverse\n\n$(cat /etc/apt/sources.list)" > /etc/apt/sources.list
+# add local mirror if specified
+RUN [ -z "$MIRROR" ] || echo -e "deb $MIRROR/packages xenial main restricted universe multiverse\ndeb $MIRROR/packages xenial-updates main restricted universe multiverse\ndeb $MIRROR/packages xenial-backports main restricted universe multiverse\ndeb $MIRROR/packages xenial-security main restricted universe multiverse\n\n$(cat /etc/apt/sources.list)" > /etc/apt/sources.list
 
 # prepare
 RUN apt-get update && apt-get upgrade -y
