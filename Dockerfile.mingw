@@ -2,14 +2,13 @@
 # package explanation:
 # - mingw-w64: Windows cross compilation
 FROM viaduck/ci as build-pe-util
-
 SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y mingw-w64 wget libboost-system-dev libboost-filesystem-dev
 
 # pe-util
 WORKDIR /tmp/
-RUN git clone https://github.com/gsauthof/pe-util
+RUN git clone https://github.com/viaduck/pe-util
 WORKDIR /tmp/pe-util
 RUN git submodule update --init
 WORKDIR /tmp/pe-util/build
@@ -19,15 +18,14 @@ RUN cp peldd /usr/bin/peldd-bin
 ADD peldd-debian.sh /usr/bin/peldd
 
 FROM viaduck/ci
-RUN apt-get update && apt-get upgrade -y && apt-get install -y mingw-w64 libboost-system1.67 libboost-filesystem1.67
+RUN apt-get update && apt-get upgrade -y && apt-get install -y mingw-w64 libboost-system1.74.0 libboost-filesystem1.74.0
 RUN rm -rf /var/lib/apt/lists/*
 COPY --from=0 /usr/bin/peldd* /usr/bin/
 
 # add various patches that fix MinGW builds
 ADD patches/ /tmp/patches/
-# Patch CMake to workaround issue #20
-WORKDIR /usr/share/cmake-3.13
-RUN patch -p1 -i /tmp/patches/001-replace-isystem_with-I.patch
+
+# patches
 
 # cleanup
 RUN rm -rf /tmp/patches/
