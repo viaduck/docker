@@ -12,7 +12,7 @@
 # - libnss3-dev, libxss-dev, libasound2-dev: CEF dependencies
 # - extra-cmake-modules: libsnore dependency
 # - yarn, nodejs: gui-common dependency
-# - clang-11, libfuzzer-11-dev: [optional] Required for fuzzing
+# - clang, libfuzzer-11-dev: [optional] Required for fuzzing
 FROM debian:bullseye
 ARG MIRROR=
 SHELL ["/bin/bash", "-c"]
@@ -26,7 +26,7 @@ RUN apt-get install -y build-essential git curl apt-transport-https ninja-build 
                 libssl-dev libmariadb-dev lcov graphviz libicu-dev googletest libgtest-dev pkg-config \
                 libsqlite3-dev libboost-dev libhiredis-dev libyaml-cpp-dev libuv1-dev mariadb-client \
                 qtbase5-dev libqt5svg5-dev extra-cmake-modules libnss3-dev libxss-dev libasound2-dev \
-                clang-11 libfuzzer-11-dev
+                clang libfuzzer-11-dev
 
 
 # add yarn repo
