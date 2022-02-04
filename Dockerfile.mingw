@@ -22,11 +22,5 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y mingw-w64 libboos
 RUN rm -rf /var/lib/apt/lists/*
 COPY --from=0 /usr/bin/peldd* /usr/bin/
 
-# add various patches that fix MinGW builds
-ADD patches/ /tmp/patches/
-
-# patches
-
 # cleanup
-RUN rm -rf /tmp/patches/
 WORKDIR /
