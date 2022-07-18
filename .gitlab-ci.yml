@@ -1,0 +1,52 @@
+.build_image:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  variables:
+    BUILD_REGISTRY_URL: "https://index.docker.io/v1/"
+    BUILD_REGISTRY_AUTH: "${BUILD_REGISTRY_USER}:${BUILD_REGISTRY_PASSWORD}"
+  script:
+    - mkdir -p /kaniko/.docker
+    # configure dependency proxy auth and registry auth
+    - echo "{\"auths\":{\"${CI_DEPENDENCY_PROXY_SERVER}\":{\"auth\":\"$(echo -n $CI_DEPENDENCY_PROXY_USER:$CI_DEPENDENCY_PROXY_PASSWORD | base64 | tr -d '\n')\"}, \"${BUILD_REGISTRY_URL}\":{\"auth\":\"$(echo -n ${BUILD_REGISTRY_AUTH} | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+    # add dependency proxy prefix
+    - sed -i -r "s%^FROM (.*)$%FROM ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/\1%" "${CI_PROJECT_DIR}/${BUILD_DOCKERFILE}"
+    - >-
+      /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --dockerfile "${CI_PROJECT_DIR}/${BUILD_DOCKERFILE}"
+      --destination "${BUILD_IMAGE_NAME}"
+      --single-snapshot
+      --cleanup
+      ${DEPLOY_ARGS}
+      ${BUILD_ARGS}
+  rules:
+    # do not push if this is not the default branch
+    - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH
+      variables:
+        DEPLOY_ARGS: "--no-push --tarPath=/dev/null"
+    # condition required so that the job is not omitted when not run on default branch
+    - when: on_success
+
+viaduck/ci:
+  extends: .build_image
+  variables:
+    BUILD_IMAGE_NAME: "viaduck/ci"
+    BUILD_ARGS: "--build-arg MIRROR=http://mirror.hetzner.de/debian"
+    BUILD_DOCKERFILE: "Dockerfile.ci"
+
+viaduck/ci:mingw:
+  extends: .build_image
+  needs: ["viaduck/ci"]
+  variables:
+    BUILD_IMAGE_NAME: "viaduck/ci:mingw"
+    BUILD_DOCKERFILE: "Dockerfile.mingw"
+
+viaduck/ci:android:
+  extends: .build_image
+  needs: ["viaduck/ci"]
+  variables:
+    BUILD_IMAGE_NAME: "viaduck/ci:android"
+    BUILD_DOCKERFILE: "Dockerfile.android"
+
