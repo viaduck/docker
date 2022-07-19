@@ -8,10 +8,6 @@
 # - googletest, libgtest-dev: [optional] Google Test for automated testing
 # - libicu-dev, libsqlite3-dev, pkg-config: For building sqlite3
 # - libboost-dev: [optional] Boost replacement for std::optional in sqlite_modern_cpp
-# - qtbase5-dev, libqt5svg5-dev: desktop UI dependencies
-# - libnss3-dev, libxss-dev, libasound2-dev: CEF dependencies
-# - extra-cmake-modules: libsnore dependency
-# - yarn, nodejs: gui-common dependency
 # - clang, libfuzzer-11-dev: [optional] Required for fuzzing
 FROM debian:bullseye
 ARG MIRROR=
@@ -25,18 +21,7 @@ RUN apt-get update && apt-get upgrade -y
 RUN apt-get install -y build-essential git curl apt-transport-https ninja-build cmake python3 doxygen python3-pip \
                 libssl-dev libmariadb-dev lcov graphviz libicu-dev googletest libgtest-dev pkg-config \
                 libsqlite3-dev libboost-dev libhiredis-dev libyaml-cpp-dev libuv1-dev mariadb-client \
-                qtbase5-dev libqt5svg5-dev extra-cmake-modules libnss3-dev libxss-dev libasound2-dev \
                 clang libfuzzer-11-dev
-
-
-# add yarn repo
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor > /usr/share/keyrings/yarn.gpg
-RUN echo "deb [signed-by=/usr/share/keyrings/yarn.gpg] https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-# add node repo
-RUN curl -sSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor > /usr/share/keyrings/nodesource.gpg
-RUN echo "deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x bullseye main" | tee /etc/apt/sources.list.d/nodesource.list
-# install yarn and node
-RUN apt-get update && apt-get install -y yarn nodejs
 
 # get linter
 RUN git clone https://gl.viaduck.org/viaduck/lint.git

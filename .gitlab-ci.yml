@@ -50,3 +50,9 @@ viaduck/ci:android:
     BUILD_IMAGE_NAME: "viaduck/ci:android"
     BUILD_DOCKERFILE: "Dockerfile.android"
 
+viaduck/ci:gui:
+  extends: .build_image
+  needs: ["viaduck/ci"]
+  variables:
+    BUILD_IMAGE_NAME: "viaduck/ci:gui"
+    BUILD_DOCKERFILE: "Dockerfile.gui"

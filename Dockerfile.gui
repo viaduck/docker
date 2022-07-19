@@ -1,0 +1,20 @@
+# Dockerfile for building a CI container that is used for graphical user-interfaces
+# package explanation:
+# - qtbase5-dev, qtwebengine5-dev, libqt5websockets5-dev, libqt5webchannel5-dev, libqt5svg5-dev: desktop UI dependencies
+# - extra-cmake-modules: libsnore dependency
+# - nodejs: gui-common dependency
+# - flatpak-builder: build platform independent GUI package
+FROM viaduck/ci
+SHELL ["/bin/bash", "-c"]
+
+RUN apt-get update && apt-get upgrade -y && apt-get install -y qtbase5-dev qtwebengine5-dev libqt5websockets5-dev \
+                libqt5webchannel5-dev libqt5svg5-dev extra-cmake-modules flatpak-builder
+
+# add node repo
+RUN curl -sSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor > /usr/share/keyrings/nodesource.gpg
+RUN echo "deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x bullseye main" | tee /etc/apt/sources.list.d/nodesource.list
+# install node
+RUN apt-get update && apt-get install -y nodejs
+
+# cleanup
+WORKDIR /
