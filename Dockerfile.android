@@ -1,11 +1,11 @@
-# Dockerfile for building a CI container that is used for cross-compiling
+# Dockerfile for building a CI image that is used for Android compilation
 FROM viaduck/ci
-ARG ANDROID_CMDLINE_TOOLS=7583922
-ARG ANDROID_STUDIO_VERSION_EXTERNAL=2020.3.1.25
-ARG NDK_VERSION=r23b
+ARG ANDROID_CMDLINE_TOOLS=10406996
+ARG NDK_VERSION=r25c
+ARG NDK_VERSION_DIRECTORY=25.1.8937393
 
 SHELL ["/bin/bash", "-c"]
-RUN apt-get update && apt-get upgrade -y && apt-get install -y wget tar unzip lib32stdc++6 lib32z1
+RUN apt-get update && apt-get upgrade -y && apt-get install -y wget tar unzip lib32stdc++6 lib32z1 openjdk-17-jre-headless
 RUN rm -rf /var/lib/apt/lists/*
 
 # download sdk
@@ -15,44 +15,32 @@ RUN wget -nv -O sdk.zip https://dl.google.com/android/repository/commandlinetool
 RUN unzip -q -d sdk sdk.zip
 # fix for sdkmanager expected location sdk/cmdline-tools/latest/...
 RUN mv sdk/cmdline-tools sdk/latest && mkdir -p sdk/cmdline-tools && mv sdk/latest/ sdk/cmdline-tools/
-RUN echo ANDROID_CMDLINE_TOOLS > sdk/version.txt
+RUN echo ${ANDROID_CMDLINE_TOOLS} > sdk/version.txt
 
-# download Android Studio with bundled jre
-RUN wget -nv -O studio.tar.gz https://dl.google.com/dl/android/studio/ide-zips/${ANDROID_STUDIO_VERSION_EXTERNAL}/android-studio-${ANDROID_STUDIO_VERSION_EXTERNAL}-linux.tar.gz
-RUN tar -xf studio.tar.gz
-RUN mv android-studio/jre/ jre/
-RUN echo $ANDROID_STUDIO_VERSION_EXTERNAL > jre/version.txt
-ENV JAVA_HOME /android/jre/
-ENV PATH "${PATH}:${JAVA_HOME}/bin/"
-
-# install stuff
-WORKDIR /android/
-RUN echo y | sdk/cmdline-tools/latest/bin/sdkmanager "platform-tools"
-RUN echo y | sdk/cmdline-tools/latest/bin/sdkmanager "platforms;android-30"
-RUN echo y | sdk/cmdline-tools/latest/bin/sdkmanager "platforms;android-29"
-RUN echo y | sdk/cmdline-tools/latest/bin/sdkmanager "platforms;android-28"
-RUN echo y | sdk/cmdline-tools/latest/bin/sdkmanager "platforms;android-27"
-RUN echo y | sdk/cmdline-tools/latest/bin/sdkmanager "build-tools;28.0.3"
-
-# symlinks
-RUN ln -s 28.0.3/ /android/sdk/build-tools/latest
+# setup env
+ENV PATH "${PATH}:/android/sdk/cmdline-tools/latest/bin/"
+ENV ANDROID_HOME "/android/sdk/"
 
 # accept licenses
 RUN set +o pipefail
-RUN yes | sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+RUN yes | sdkmanager --licenses
 RUN set -o pipefail
 
-# download ndk
+# install stuff
+WORKDIR /android/
+RUN sdkmanager "platform-tools"
+RUN sdkmanager "platforms;android-30"
+RUN sdkmanager "platforms;android-29"
+RUN sdkmanager "platforms;android-28"
+RUN sdkmanager "platforms;android-27"
+RUN sdkmanager "build-tools;28.0.3"
+
+# download commonly used ndk versions
 RUN wget -nv -O ndk.zip https://dl.google.com/android/repository/android-ndk-${NDK_VERSION}-linux.zip
 RUN unzip -q ndk.zip
-
-# install ndk
-RUN ln -s android-ndk-${NDK_VERSION} ndk
-RUN ln -s android-ndk-${NDK_VERSION} sdk/ndk-bundle
-ENV ANDROID_NDK_HOME /android/ndk/
-RUN echo $NDK_VERSION > ndk/version.txt
+# move ndk to correct directory
+RUN mkdir -p sdk/ndk/ && mv android-ndk-${NDK_VERSION} sdk/ndk/${NDK_VERSION_DIRECTORY}
 
 # cleanup
-RUN rm -f sdk.zip ndk.zip studio.tar.gz
-RUN rm -rf android-studio/
+RUN rm -f sdk.zip ndk.zip
 WORKDIR /
