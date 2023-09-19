@@ -20,6 +20,7 @@ RUN echo ${ANDROID_CMDLINE_TOOLS} > sdk/version.txt
 # setup env
 ENV PATH "${PATH}:/android/sdk/cmdline-tools/latest/bin/"
 ENV ANDROID_HOME "/android/sdk/"
+ENV ANDROID_NDK "/android/sdk/ndk/${NDK_VERSION_DIRECTORY}"
 
 # accept licenses
 RUN set +o pipefail
