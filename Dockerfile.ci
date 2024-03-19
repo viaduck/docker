@@ -9,7 +9,7 @@
 # - libicu-dev, libsqlite3-dev, pkg-config: For building sqlite3
 # - libboost-dev: [optional] Boost replacement for std::optional in sqlite_modern_cpp
 # - clang, libfuzzer-11-dev: [optional] Required for fuzzing
-FROM debian:bullseye
+FROM debian:bookworm
 ARG MIRROR=
 SHELL ["/bin/bash", "-c"]
 
@@ -21,11 +21,11 @@ RUN apt-get update && apt-get upgrade -y
 RUN apt-get install -y build-essential git curl apt-transport-https ninja-build cmake python3 doxygen python3-pip \
                 libssl-dev libmariadb-dev lcov graphviz libicu-dev googletest libgtest-dev pkg-config \
                 libsqlite3-dev libboost-dev libhiredis-dev libyaml-cpp-dev libuv1-dev mariadb-client \
-                clang libfuzzer-11-dev
+                clang libfuzzer-16-dev
 
 # get linter
 RUN git clone https://gl.viaduck.org/viaduck/lint.git
 RUN ln -s /lint/vd-lint /bin/vd-lint
 
 RUN rm -rf /var/lib/apt/lists/*
-RUN pip3 install cogapp
+RUN pip3 install --break-system-packages cogapp
