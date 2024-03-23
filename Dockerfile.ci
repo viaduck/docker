@@ -9,12 +9,19 @@
 # - libicu-dev, libsqlite3-dev, pkg-config: For building sqlite3
 # - libboost-dev: [optional] Boost replacement for std::optional in sqlite_modern_cpp
 # - clang, libfuzzer-11-dev: [optional] Required for fuzzing
-FROM debian:bookworm
-ARG MIRROR=
+ARG DEBIAN_VERSION=bookworm
+FROM debian:${DEBIAN_VERSION}
 SHELL ["/bin/bash", "-c"]
 
+ARG MIRROR
+ARG DEBIAN_VERSION
+
 # add local mirror if specified
-RUN [ -z "$MIRROR" ] || echo -e "deb $MIRROR/packages bullseye main contrib non-free\ndeb $MIRROR/packages bullseye-updates main contrib non-free\ndeb $MIRROR/security bullseye-security main contrib non-free\n\n$(cat /etc/apt/sources.list)" > /etc/apt/sources.list
+RUN [ -z "$MIRROR" ] || echo -e \
+                "deb $MIRROR/packages ${DEBIAN_VERSION} main contrib non-free\n" \
+                "deb $MIRROR/packages ${DEBIAN_VERSION}-updates main contrib non-free\n" \
+                "deb $MIRROR/security ${DEBIAN_VERSION}-security main contrib non-free\n\n" \
+                > /etc/apt/sources.list.d/00mirror.list
 
 # update, upgrade and install
 RUN apt-get update && apt-get upgrade -y
