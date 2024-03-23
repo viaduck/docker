@@ -1,10 +1,12 @@
 # Dockerfile for building a CI container that is used for cross-compiling
-# package explanation:
-# - mingw-w64: Windows cross compilation
 FROM viaduck/ci as build-pe-util
 SHELL ["/bin/bash", "-c"]
 
-RUN apt-get update && apt-get upgrade -y && apt-get install -y mingw-w64 wget libboost-system-dev libboost-filesystem-dev
+RUN apt-get update && apt-get upgrade -y && apt-get install -y \
+        # required for Windows cross-compilation
+        mingw-w64 \
+        # required for pe-util
+        libboost-system-dev libboost-filesystem-dev
 
 # pe-util
 WORKDIR /tmp/
@@ -15,7 +17,7 @@ WORKDIR /tmp/pe-util/build
 RUN cmake -G Ninja -DCMAKE_BUILD_TYPE=Release ..
 RUN ninja
 RUN cp peldd /usr/bin/peldd-bin
-ADD peldd-debian.sh /usr/bin/peldd
+ADD files/peldd-debian.sh /usr/bin/peldd
 
 FROM viaduck/ci
 RUN apt-get update && apt-get upgrade -y && apt-get install -y mingw-w64 libboost-system1.74.0 libboost-filesystem1.74.0

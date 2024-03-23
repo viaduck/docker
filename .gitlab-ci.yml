@@ -34,25 +34,25 @@ viaduck/ci:
   variables:
     BUILD_IMAGE_NAME: "viaduck/ci"
     BUILD_ARGS: "--build-arg MIRROR=http://mirror.hetzner.de/debian"
-    BUILD_DOCKERFILE: "Dockerfile.ci"
+    BUILD_DOCKERFILE: "docker/Dockerfile.ci"
 
 viaduck/ci:mingw:
   extends: .build_image
   needs: ["viaduck/ci"]
   variables:
     BUILD_IMAGE_NAME: "viaduck/ci:mingw"
-    BUILD_DOCKERFILE: "Dockerfile.mingw"
+    BUILD_DOCKERFILE: "docker/Dockerfile.mingw"
 
 viaduck/ci:android:
   extends: .build_image
   needs: ["viaduck/ci"]
   variables:
     BUILD_IMAGE_NAME: "viaduck/ci:android"
-    BUILD_DOCKERFILE: "Dockerfile.android"
+    BUILD_DOCKERFILE: "docker/Dockerfile.android"
 
 viaduck/ci:gui:
   extends: .build_image
   needs: ["viaduck/ci"]
   variables:
     BUILD_IMAGE_NAME: "viaduck/ci:gui"
-    BUILD_DOCKERFILE: "Dockerfile.gui"
+    BUILD_DOCKERFILE: "docker/Dockerfile.gui"

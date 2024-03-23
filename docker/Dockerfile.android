@@ -5,7 +5,14 @@ ARG NDK_VERSION=r25c
 ARG NDK_VERSION_DIRECTORY=25.1.8937393
 
 SHELL ["/bin/bash", "-c"]
-RUN apt-get update && apt-get upgrade -y && apt-get install -y wget tar unzip lib32stdc++6 lib32z1 openjdk-17-jre-headless
+RUN apt-get update && apt-get upgrade -y && apt-get install -y \
+        # download and unpack
+        wget tar unzip \
+        # ndk compatibility
+        lib32stdc++6 lib32z1 \
+        # java for android tools
+        openjdk-17-jre-headless
+
 RUN rm -rf /var/lib/apt/lists/*
 
 # download sdk
