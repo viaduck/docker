@@ -8,15 +8,9 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
         # required for notifications
         libkf5notifications-dev extra-cmake-modules \
         # used to build platform independent gui package
-        flatpak-builder
-
-# add node repo
-RUN curl -sSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor > /usr/share/keyrings/nodesource.gpg
-RUN echo "deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x bullseye main" | tee /etc/apt/sources.list.d/nodesource.list
-# install node
-RUN apt-get update && apt-get install -y \
+        flatpak-builder \
         # required for building gui-common
-        nodejs
+        nodejs npm
 
 # cleanup
 WORKDIR /
