@@ -2,6 +2,17 @@
 FROM viaduck/ci
 SHELL ["/bin/bash", "-c"]
 
+# add nodesource repo
+RUN curl -sSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor > /etc/apt/keyrings/nodesource.gpg
+RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
+
+# pin nodejs to nodesource repo
+RUN echo -e \
+        "Package: nodejs\n" \
+        "Pin: origin deb.nodesource.com\n" \
+        "Pin-Priority: 600\n\n" \
+        > /etc/apt/preferences.d/nodejs
+
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
         # required for desktop gui
         qtbase5-dev qtwebengine5-dev libqt5websockets5-dev libqt5webchannel5-dev libqt5svg5-dev \
@@ -9,8 +20,8 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
         libkf5notifications-dev extra-cmake-modules \
         # used to build platform independent gui package
         flatpak-builder \
-        # required for building gui-common
-        nodejs npm
+        # required for building gui-common (from nodesource)
+        nodejs
 
 # cleanup
 WORKDIR /
