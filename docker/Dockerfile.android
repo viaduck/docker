@@ -1,8 +1,8 @@
 # Dockerfile for building a CI image that is used for Android compilation
 FROM viaduck/ci
 ARG ANDROID_CMDLINE_TOOLS=11076708
-ARG NDK_VERSION=r26d
-ARG NDK_VERSION_DIRECTORY=26.3.11579264
+ARG NDK_VERSION=r27c
+ARG NDK_VERSION_DIRECTORY=27.2.12479018
 
 SHELL ["/bin/bash", "-c"]
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
