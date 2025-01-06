@@ -49,13 +49,15 @@ RUN yes | sdkmanager --licenses
 RUN set -o pipefail
 
 # install stuff
-WORKDIR /android/
 RUN sdkmanager "platform-tools"
 RUN sdkmanager "platforms;android-30"
 RUN sdkmanager "platforms;android-29"
 RUN sdkmanager "platforms;android-28"
 RUN sdkmanager "platforms;android-27"
 RUN sdkmanager "build-tools;28.0.3"
+
+# symlink latest build-tools for expected location sdk/build-tools/latest/... if not already exists
+RUN cd sdk/build-tools && if [ ! -L latest ]; then ln -s $(ls -1dt * | sort -rn | sed 1q) latest; fi
 
 # download commonly used ndk versions
 RUN wget -nv -O ndk.zip https://dl.google.com/android/repository/android-ndk-${NDK_VERSION}-linux.zip
