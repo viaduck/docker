@@ -4,7 +4,7 @@ SHELL ["/bin/bash", "-c"]
 
 # add nodesource repo
 RUN curl -sSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor > /etc/apt/keyrings/nodesource.gpg
-RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
+RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_22.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
 
 # pin nodejs to nodesource repo
 RUN echo -e \
@@ -13,15 +13,28 @@ RUN echo -e \
         "Pin-Priority: 600\n\n" \
         > /etc/apt/preferences.d/nodejs
 
+# create testing repo
+RUN echo -e \
+        "deb https://deb.debian.org/debian testing main" \
+        > /etc/apt/sources.list.d/testing.list
+# pin it below 100
+RUN echo -e \
+        "Package: *" \
+        "Pin: release a=testing" \
+        "Pin-Priority: 50" \
+        > /etc/apt/preferences.d/99testing
+
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
         # required for desktop gui
-        qtbase5-dev qtwebengine5-dev libqt5websockets5-dev libqt5webchannel5-dev libqt5svg5-dev \
-        # required for notifications
-        libkf5notifications-dev extra-cmake-modules \
+        qt6-base-dev qt6-webengine-dev qt6-websockets-dev qt6-webchannel-dev qt6-svg-dev \
         # used to build platform independent gui package
         flatpak-builder \
         # required for building gui-common (from nodesource)
         nodejs
+
+RUN apt-get install -y -t testing \
+        # required for notifications
+        libkf6notifications-dev extra-cmake-modules
 
 # cleanup
 WORKDIR /
