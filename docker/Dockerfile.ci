@@ -35,7 +35,7 @@ RUN apt-get install -y \
         # [optional] coverage and documentation generation
         doxygen lcov graphviz \
         # [optional] automated testing
-        googletest libgtest-dev \
+        googletest libgtest-dev gdb \
         # [optional] required for fuzzing
         clang libfuzzer-16-dev
 
