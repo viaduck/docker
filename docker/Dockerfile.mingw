@@ -1,5 +1,5 @@
 # Dockerfile for building a CI container that is used for cross-compiling
-FROM viaduck/ci as build-pe-util
+FROM viaduck/ci AS build-pe-util
 SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
@@ -23,6 +23,15 @@ FROM viaduck/ci
 RUN apt-get update && apt-get upgrade -y && apt-get install -y mingw-w64 libboost-system1.74.0 libboost-filesystem1.74.0
 RUN rm -rf /var/lib/apt/lists/*
 COPY --from=0 /usr/bin/peldd* /usr/bin/
+
+# Toolchain files
+ADD toolchains /opt/toolchains
+
+# LLVM-MinGW
+ARG LLVM_VERSION=20250709
+RUN mkdir -p /opt/llvm-w64-mingw32 && \
+        curl -sL https://github.com/mstorsjo/llvm-mingw/releases/download/${LLVM_VERSION}/llvm-mingw-${LLVM_VERSION}-ucrt-ubuntu-22.04-x86_64.tar.xz |\
+        tar -Jxf - --strip-components=1 -C /opt/llvm-w64-mingw32
 
 # cleanup
 WORKDIR /
