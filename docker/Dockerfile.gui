@@ -8,9 +8,9 @@ RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesourc
 
 # pin nodejs to nodesource repo
 RUN echo -e \
-        "Package: nodejs\n" \
-        "Pin: origin deb.nodesource.com\n" \
-        "Pin-Priority: 600\n\n" \
+        "Package: nodejs" \
+        "\n""Pin: origin deb.nodesource.com" \
+        "\n""Pin-Priority: 600"\
         > /etc/apt/preferences.d/nodejs
 
 # create testing repo
@@ -20,8 +20,8 @@ RUN echo -e \
 # pin it below 100
 RUN echo -e \
         "Package: *" \
-        "Pin: release a=testing" \
-        "Pin-Priority: 50" \
+        "\n""Pin: release a=testing" \
+        "\n""Pin-Priority: 50" \
         > /etc/apt/preferences.d/99testing
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
