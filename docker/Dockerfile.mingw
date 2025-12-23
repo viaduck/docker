@@ -26,7 +26,7 @@ COPY --from=0 /usr/bin/peldd* /usr/bin/
 ADD toolchains /opt/toolchains
 
 # LLVM-MinGW
-ARG LLVM_VERSION=20250709
+ARG LLVM_VERSION=20251216
 RUN mkdir -p /opt/llvm-w64-mingw32 && \
         curl -sL https://github.com/mstorsjo/llvm-mingw/releases/download/${LLVM_VERSION}/llvm-mingw-${LLVM_VERSION}-ucrt-ubuntu-22.04-x86_64.tar.xz |\
         tar -Jxf - --strip-components=1 -C /opt/llvm-w64-mingw32
