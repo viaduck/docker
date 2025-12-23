@@ -13,28 +13,15 @@ RUN echo -e \
         "\n""Pin-Priority: 600"\
         > /etc/apt/preferences.d/nodejs
 
-# create testing repo
-RUN echo -e \
-        "deb https://deb.debian.org/debian testing main" \
-        > /etc/apt/sources.list.d/testing.list
-# pin it below 100
-RUN echo -e \
-        "Package: *" \
-        "\n""Pin: release a=testing" \
-        "\n""Pin-Priority: 50" \
-        > /etc/apt/preferences.d/99testing
-
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
         # required for desktop gui
         qt6-base-dev qt6-webengine-dev qt6-websockets-dev qt6-webchannel-dev qt6-svg-dev \
         # used to build platform independent gui package
         flatpak-builder \
+        # required for notifications
+        libkf6notifications-dev extra-cmake-modules \
         # required for building gui-common (from nodesource)
         nodejs
-
-RUN apt-get install -y -t testing \
-        # required for notifications
-        libkf6notifications-dev extra-cmake-modules
 
 # cleanup
 WORKDIR /
