@@ -8,13 +8,12 @@ ARG NDK_VERSION_DIRECTORY=27.2.12479018
 
 # add nodesource repo
 RUN curl -sSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor > /etc/apt/keyrings/nodesource.gpg
-RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
-
+RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_24.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
 # pin nodejs to nodesource repo
 RUN echo -e \
-        "Package: nodejs\n" \
-        "Pin: origin deb.nodesource.com\n" \
-        "Pin-Priority: 600\n\n" \
+        "Package: nodejs" \
+        "\n""Pin: origin deb.nodesource.com" \
+        "\n""Pin-Priority: 600" \
         > /etc/apt/preferences.d/nodejs
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
