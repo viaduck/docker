@@ -4,9 +4,7 @@ SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
         # required for Windows cross-compilation
-        mingw-w64 \
-        # required for pe-util
-        libboost-system-dev libboost-filesystem-dev
+        mingw-w64
 
 # pe-util
 WORKDIR /tmp/
@@ -14,13 +12,13 @@ RUN git clone https://github.com/viaduck/pe-util
 WORKDIR /tmp/pe-util
 RUN git submodule update --init
 WORKDIR /tmp/pe-util/build
-RUN cmake -G Ninja -DCMAKE_BUILD_TYPE=Release ..
+RUN cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DUSE_FILESYSTEM=ON ..
 RUN ninja
 RUN cp peldd /usr/bin/peldd-bin
 ADD files/peldd-debian.sh /usr/bin/peldd
 
 FROM viaduck/ci
-RUN apt-get update && apt-get upgrade -y && apt-get install -y mingw-w64 libboost-system1.74.0 libboost-filesystem1.74.0
+RUN apt-get update && apt-get upgrade -y && apt-get install -y mingw-w64
 RUN rm -rf /var/lib/apt/lists/*
 COPY --from=0 /usr/bin/peldd* /usr/bin/
 
