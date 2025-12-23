@@ -2,9 +2,9 @@
 FROM viaduck/ci
 SHELL ["/bin/bash", "-c"]
 
-ARG ANDROID_CMDLINE_TOOLS=11076708
-ARG NDK_VERSION=r27c
-ARG NDK_VERSION_DIRECTORY=27.2.12479018
+ARG ANDROID_CMDLINE_TOOLS=13114758
+ARG NDK_VERSION=r27d
+ARG NDK_VERSION_DIRECTORY=27.3.13750724
 
 # add nodesource repo
 RUN curl -sSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor > /etc/apt/keyrings/nodesource.gpg
@@ -53,7 +53,7 @@ RUN sdkmanager "platforms;android-30"
 RUN sdkmanager "platforms;android-29"
 RUN sdkmanager "platforms;android-28"
 RUN sdkmanager "platforms;android-27"
-RUN sdkmanager "build-tools;28.0.3"
+RUN sdkmanager "build-tools;36.1.0"
 
 # symlink latest build-tools for expected location sdk/build-tools/latest/... if not already exists
 RUN cd sdk/build-tools && if [ ! -L latest ]; then ln -s $(ls -1dt * | sort -rn | sed 1q) latest; fi
